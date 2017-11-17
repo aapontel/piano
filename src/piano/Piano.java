@@ -33,18 +33,42 @@ public class Piano implements ActionListener,MouseListener{
     public static Piano piano;
     private URL url = null;
     public  Renderer renderer;
-    public boolean creatingPattern ;
+    public boolean creatingPattern=true,peteada=false ;
+    
     
     public static final int WIDTH =412,HEIGHT =400;  
-    public int flashed= 0,indexPattern;
+    public int flashed= 0,indexPattern=0,miralo,count=0;
     public ArrayList<Integer> pattern;
     
     public void start(){
         pattern = new ArrayList<Integer>();
-        
-        if(creatingPattern== true){
-            pattern.add(flashed);
+        while (peteada==false) {            
+         if(creatingPattern== true){
+            if (flashed != 18) {
+             pattern.add(flashed);
+            indexPattern++;
+            creatingPattern=false; 
+            flashed=9;   
+            }
+            
         }
+        if (creatingPattern == false) {
+            for (int i =0; i < indexPattern; i++) {
+                miralo=pattern.get(i);
+                if (flashed!=9) {
+                    if(flashed==miralo){
+                        count++;
+                    }else if(flashed!=miralo){
+                        peteada=false;
+                    }
+                }
+                
+                
+            }
+            count=0;
+        }  
+        }
+         
     }
     public Piano(){
         JFrame frame = new JFrame();
@@ -63,11 +87,12 @@ public class Piano implements ActionListener,MouseListener{
         
     
     public static void main(String[] args) {
-        piano = new Piano();   
+        piano = new Piano(); 
+        piano.start();
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) { 
        renderer.repaint();
     }
 
@@ -75,16 +100,16 @@ public class Piano implements ActionListener,MouseListener{
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON  );
         
         g.setColor(Color.BLACK);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
         
         Image fondo = loadImage("piano1.jpg");
         g.drawImage(fondo, 0, 0, null);
-        g.setColor(Color.WHITE);
+      
         g.setStroke(new BasicStroke(200));
-        if (flashed == 1) {
-            g.setColor(Color.BLACK);
-        }else{
-            
+        
+        if (peteada == false) {
+            g.drawString(count+"/"+indexPattern, WIDTH/2, HEIGHT*3/4);
+        }else if (peteada == true){
+            g.drawString("la morraqueo", WIDTH/2, HEIGHT*3/4);
         }
       }
 
@@ -102,7 +127,7 @@ public class Piano implements ActionListener,MouseListener{
     @Override
     public void mousePressed(MouseEvent e) {
         int x= e.getX(),y= e.getY();
-    if(!creatingPattern){    
+        
         if(x>0 && x<WIDTH/7 && y>0 && y < HEIGHT  ){
             try {
                  url = new URL("file:DO.wav");
@@ -170,7 +195,6 @@ public class Piano implements ActionListener,MouseListener{
         } 
         
 
-    }
 }
     @Override
     public void mouseReleased(MouseEvent e) {
